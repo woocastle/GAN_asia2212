@@ -5,20 +5,14 @@ from keras.layers import *
 from keras.datasets import mnist
 
 input_img = Input(shape=(784,))
-encoded = Dense(32, activation='relu') # input을 따로 안줌 위에 줌 # relu는 넘어간다.
-encoded = encoded(input_img)
+encoded = Dense(128, activation='relu')(input_img) # input을 따로 안줌 위에 줌 # relu는 넘어간다.
+encoded = Dense(64, activation='relu')(encoded) # 천천히 줄인다
+encoded = Dense(32, activation='relu')(encoded)
+decoded = Dense(64, activation='sigmoid')(encoded) # 천천히 늘린다
+decoded = Dense(128, activation='sigmoid')(encoded)
 decoded = Dense(784, activation='sigmoid') # 위에 encoded를 뱉어낸다. # minmax정규화를 함
-decoded = decoded(encoded)
 autoencoder = Model(input_img, decoded)
 autoencoder.summary()
-
-encoder = Model(input_img, encoded)
-encoder.summary()
-
-encoder_input = Input(shape=(32,))
-decoder_layer = autoencoder.layers[-1]
-decoder = Model(encoder_input, decoder_layer(encoder_input))
-decoder.summary()
 
 autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
 
@@ -32,8 +26,7 @@ flatted_x_test = x_test.reshape(-1, 784)
 fit_hist = autoencoder.fit(flatted_x_train, flatted_x_train, epochs=50,
                 batch_size=256, validation_data=(flatted_x_test, flatted_x_test))
 
-encoded_img = encoder.predict(x_test[:10].reshape(-1, 784))
-decoded_img = decoder.predict(encoded_img)
+decoded_img = autoencoder.predict(x_test[:10])
 
 n = 10
 #plt.gray()
