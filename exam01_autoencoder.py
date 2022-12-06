@@ -4,7 +4,7 @@ from keras.models import *
 from keras.layers import *
 from keras.datasets import mnist
 
-input_img = Input(shape=(784,))
+input_img = Input(shape=(784,)) # 밑에 32는 픽셀을 의미함
 encoded = Dense(32, activation='relu') # input을 따로 안줌 위에 줌 # relu는 넘어간다.
 encoded = encoded(input_img)
 decoded = Dense(784, activation='sigmoid') # 위에 encoded를 뱉어낸다. # minmax정규화를 함
